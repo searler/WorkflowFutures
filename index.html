@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Service  orchestration with Scala</title>
+
+		<meta name="description" content="FutureWorkflow">
+		<meta name="author" content="Richard Searle">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+<section>
+	<h1>Workflow with Futures</h1>
+	<h3>Down with the golf course software</h3>
+</section>
+
+<section>
+	<h2>Introduction</h2>
+	<p>Replacing massive scale Enterprise solutions</p>
+	<p>Embracing concurrency via Futures</p>
+	<p>Implemented using Scala, Akka and Apache Camel</p>
+</section>
+				
+				
+<section>
+  <h2>Richard Searle</h2>
+  <p>Developing software since last millennium</p>
+  <p>Commercial, Aerospace and Engineering</p>
+</section>  
+
+<section>   
+  <h2>Some application domains</h2>
+  <ul>
+  <li>SCADA</li>
+  <li>Partner Relationship Management (PRM)</li>
+  <li>Enterprise Application Integration</li>
+  <li>.NET Compact Framework and z/OS Integration</li>
+  <li>Web Service Integration</li>
+  <li>Image Exploitation</li>
+  <li>High voltage transmission network design</li>
+  <li>IP Video</ip>
+  <li>Communication Systems</li>
+  </ul>
+</section>
+
+
+
+<section>
+  <h2>Service  orchestration</h2>
+  <p>Service implemented via explicit calls to other services</p>
+  <p>Root service is generally SOAP</p>
+  <p>Component services can be</p>
+  <ul>
+   <li>SOAP</li>
+   <li>Java Bean</li>
+   <li>JMS end point</li>
+   <li>...</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Service  orchestration</h2>
+  <p>Service implemented via explicit calls to other services</p>
+  <p>Root service is generally SOAP</p>
+  <p>Component services can be</p>
+  <ul>
+   <li>SOAP</li>
+   <li>Java Bean</li>
+   <li>JMS end point</li>
+   <li>...</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Commercial Workflow Engine</h2>
+  
+  <blockquote>Why only one function implemented on that platform? Because we spent a million dollars on it.</blockquote>
+  
+   <ul>
+  <li>Tibco BusinessWorks</li>
+  <li>Oracle Aqualogic Service Bus</li>
+  <li>Websphere Message Broker</li>
+  </ul>
+  
+  <p>Millions of dollars in license fees</p>
+  <p>Expensive consultants</p>
+  <p>Sold on golf course to CTO or CIO</p>
+  
+</section>
+				
+
+<section id="bpel">
+<h2>BPel</h2>
+	<img  src="bpel.gif" >
+        <p>http://www.oracle.com/technetwork/articles/matjaz-bpel1-090575.html</p>
+</section>
+
+<section>
+ <h2> BPEL case statement</h2>
+<pre><code>&lt;switch&gt;
+     &lt;case condition="bpws:getVariableData('FlightResponseAA',
+                'confirmationData','/confirmationData/Price')
+           &lt; bpws:getVariableData('FlightResponseDA',
+                       'confirmationData',
+                       '/confirmationData/Price')"&gt;
+           &lt;assign&gt;
+             &lt;copy&gt;
+               &lt;from variable="FlightResponseAA" /&gt;
+               &lt;to variable="TravelResponse" /&gt;
+             &lt;/copy&gt;
+           &lt;/assign&gt;
+        &lt;/case&gt;
+        &lt;otherwise&gt;
+           &lt;assign&gt;
+             &lt;copy&gt;
+               &lt;from variable="FlightResponseDA" /&gt;
+               &lt;to variable="TravelResponse" /&gt;
+             &lt;/copy&gt;
+           &lt;/assign&gt;
+        &lt;/otherwise&gt;
+      &lt;/switch&gt;
+      </switch>
+
+</code></pre>
+</section>
+
+<section id="xpdl">
+	<h2>XPDL</h2>
+	<img  src="xpdl.jpg" >
+        <p>http://www.xpdl.org/nugen/p/xpdlbpmnexample2/public.htm</p>
+</section>
+
+<section>
+ <h2>XPDL transition</h2>
+<pre><code>
+&lt;Transition Id="_UdQEuEZXEduihKTdqgnYIA" Name="cost &lt;= 5000" 
+    From="_UdQEsEZXEduihKTdqgnYIA" To="_UdQEsUZXEduihKTdqgnYIA"&gt;
+   &lt;Condition Type="CONDITION"&gt;
+      &lt;Expression ScriptGrammar="Text"&gt;Cost &lt;= 5000;&lt;/Expression&gt;
+   &lt;/Condition&gt;
+&lt;/Transition&gt;
+</code></pre>
+
+ <p>Extracted from 8.5 kbyte file</p>
+</section>				
+
+<section>
+<h2>Dietzler’s Law for Access</h2>
+<blockquote>
+Every Access project will eventually fail because, while 80% of what the user wants is fast and easy to create, and the next 10% is possible with difficulty, ultimately the last 10% is impossible because you can’t get far enough underneath the built-in abstractions, and users always want 100% of what they want.</blockquote>
+<p>Neal Ford</p>
+</section>
+
+<section>
+<h2>Poor to no support for standard engineering practices</h2>
+<ul>
+<li>Unit tests</li>
+<li>Revision control</li>
+<li>Refactoring</li>
+<li>Abstraction</li>
+<li>Reuse</li>
+</ul>
+<p><i>Visual</i> programming has never been successful</p>
+</section>
+
+<section>
+   <h2>Problem Domain</h2>
+   <ul>
+   <li>Telco system</li>
+   <li>Provide web services for customer details</li>
+   <li>Each customer has a unique identifier</li>
+   <li>Each customer has zero or more telephone</li>
+   <li>There is an account for each telephone</li>
+   <li>Each account has a current balance</li>
+   <li>Some accounts receive a discount</l1>
+   </ul>
+</section>
+
+
+<section>
+<h2>Data</h2>
+<pre class="fragment"><code >case class Id(i: Int)</code></pre>
+<pre class="fragment"><code >case class Num(s: String)</code></pre>
+<pre class="fragment"><code >case class Acct(s: String)</code></pre>
+<pre class="fragment"><code >case class Bal(v: Float) {
+  def +(o: Bal) = Bal(v + o.v)
+  def *(m: Float) = Bal(v * m)
+}</code></pre>		
+</section>
+
+<section>
+						<h2>Data Samples</h2>
+<p>Singleton containing constant maps</p>						
+<pre class="fragment"><code >object ValueMaps {</code></pre>
+<pre class="fragment"><code >  val discountMap = Map(
+    Acct("alpha") -> true,
+    Acct("beta")  -> false,
+    Acct("gamma") -> true)</code></pre>
+<pre class="fragment"><code >  val balMap = Map(
+    Acct("alpha") -> Bal(124.5F),
+    Acct("beta")  -> Bal(1.0F),
+    Acct("gamma") -> Bal(11.0F))</code></pre>
+<pre class="fragment"><code >val numMap = Map(
+    Id(123) -> List(
+                    Num("124-555-1234"), 
+                    Num("333-555-1234")))</code></pre>
+<pre class="fragment"><code >  val acctMap = Map(
+    Num("124-555-1234") -> Acct("alpha"),
+    Num("333-555-1234") -> Acct("beta"),
+    Num("999-555-1234") -> null,
+    Num("111-555-1234") -> Acct("zulu"))</code></pre>
+<pre class="fragment"><code >}</code></pre>
+</section>
+
+<section>
+<h2>Java "style"</h2>
+<p>Uses null to indicate missing value</p>
+</section>
+
+<section>
+<h2>Lookup</h2>
+<p>Function with a single argument of type A</p>
+<p>Returning a value of type R</p>
+<p>Could have side effects.</p>
+<p>Abstraction of an external service</p>
+<pre class="fragment"><code > trait Lookup[A, R] extends Function1[A, Future[R]] {
+  def apply(arg: A): Future[R]
+}</code></pre>
+</section>
+
+<section>
+<h2>Java "style"</h2>
+<p>Silent on how missing or inappropriate data is handled</p>
+<p>Assume nulls and exceptions</p>
+<p>Reasonable when integrating with legacy code</p>
+</section>
+
+<section>
+<h2>Future</h2>
+<blockquote>data structure used to retrieve the result of some concurrent operation</blockquote>
+<p>Value which will become available in the future</p>
+<p>Gains its value via a write to a Promise</p>
+<p><b>Many</b> definitions and implementations</p>
+</section>
+
+
+<section>
+<h2>Map Service</h2>
+<p>Given a Map[K,V], return the value for the argument</p>
+<pre class="fragment"><code >abstract class MapService[K, V](map: Map[K, V]){
+  import ExecutionContext.Implicits.global
+  def apply(a: K) = future {map(a)} 
+}</code></pre>
+<p  class="fragment">Implement Lookup using the MapService</p>
+<pre class="fragment"><code >case class Service[K, V](values: Map[K, V])
+   extends MapService(values) with Lookup[K, V]</code></pre>
+<p  class="fragment">Singleton to provide balance given account</p>
+<pre class="fragment"><code >case object BalService 
+   extends MapService(ValueMaps.balMap) with Lookup[Acct, Bal]</code></pre>
+</section>
+
+<section>
+  <h2>Find Balance for an Account</h2>
+<pre><code>object Balance {
+  def apply(acct: Acct)(implicit balLook: Lookup[Acct, Bal]) = 
+      balLook(acct)
+}</code></pre>
+<div  class="fragment">
+<p>Automatically picks up implicit values that match by type. Much like Spring auto-wiring</p>
+</div>
+<div  class="fragment">
+<pre><code>flow : A => Future[R]</code></pre>
+<p>Same as Lookup, allowing composition</p>
+</div>
+
+</section>
+
+<section>
+  <h2>Balance specs2 Test</h2>
+  <pre><code>
+implicit val balLook: Lookup[Acct, Bal] = BalService 
+
+"balance" in {
+    Balance(Acct("alpha")).get must beEqualTo(Bal(124.5F))
+}
+</code></pre>
+</section>
+
+<section>
+  <h2>get value</h2>
+<p>get method was removed in Akka 2.0</p>  
+<pre class="fragment"><code>
+object Getter {
+   implicit  class GetterImpl[T](future: Future[T]) {
+     val duration = Duration(100, TimeUnit.MILLISECONDS)
+     def get: T = Await.result(future, duration)
+}  
+</code></pre>
+<div class="fragment">
+<p>Monkey patching<p>
+</div>
+<div class="fragment">
+<p>Controlled scope</p>
+<p>IDE support</p>
+<pre class="fragment"><code>
+import Getter._
+</code></pre>
+</div>
+</section>
+
+<section>
+  <h2>Find Balance for a number</h2>
+<pre><code>object BalanceByNum {
+  def apply(pn: Num)(implicit acctLook: Lookup[Num, Acct],
+        balLook: Lookup[Acct, Bal],
+        ec: ExecutionContext): Future[Bal] = { 
+    acctLook(pn) flatMap {balLook}
+  }
+}</code></pre>
+<div  class="fragment">
+<pre><code>flatMap[S](f: (T) ⇒ Future[S]): Future[S]</code></pre>
+<p>Combine two methods that both return Futures</p>
+</section>
+
+
+<section>
+  <h2>All accounts for a customer</h2>
+<pre><code>object AccountsByTraverse {
+def apply(id: Id)(implicit numLook: Lookup[Id, List[Num]],
+                     acctLook: Lookup[Num, Acct],
+                     ec: ExecutionContext): Future[List[Acct]] = {
+    numLook(id) flatMap { Future.traverse(_)(acctLook) }
+ }
+}</code></pre>
+<div  class="fragment">
+<pre><code>traverse[A, B, M[_]](in: M[A])(fn:(A) ⇒ Future[B]):Future[M[B]]</code></pre>
+<p>Apply function that returns a Future to elements of a collection, creating collection of the same
+<b>kind</b> containing the results.</p>
+<p>M == <i>Monad</i></p>
+</section>
+</section>
+
+
+<section>
+  <h2>All Balances for a customer</h2>
+<pre><code>
+object BalancesByMap {
+  def apply(id: Id)
+     (implicit numLook: Lookup[Id, List[Num]],
+               acctLook: Lookup[Num, Acct],
+               balLook: Lookup[Acct, Bal],
+               ec: ExecutionContext): Future[List[Bal]] =
+    numLook(id) flatMap { Future.traverse(_) { acctLook(_) 
+                          flatMap { balLook } } }
+}
+</code></pre>
+</section>
+
+<section>
+  <h2>Test Balances</h2>
+<pre><code>
+  implicit val ec = ExecutionContext.fromExecutorService(
+     Executors.newFixedThreadPool(4))
+
+  implicit val acctLook = Service(ValueMaps.acctMap)
+  implicit val balLook = Service(valuesMaps.balMap)
+  implicit val numLook = Service(ValueMaps.numMap)
+
+"bsbm" in {
+    BalancesByMap(Id(123)).get must beEqualTo(
+         List(Bal(124.5F), Bal(1.0F)))
+}
+</code></pre>
+</section>
+
+<section>
+  <h2>Total Balance for a customer</h2>
+  <pre><code>object BalanceByMap {
+  def apply(id: Id)
+      (implicit numLook: Lookup[Id, List[Num]],
+                acctLook: Lookup[Num, Acct],
+                balLook: Lookup[Acct, Bal],
+                ec:ExecutionContext): Future[Bal] =
+    BalancesByMap(id) map { _.reduce(_ + _) }
+}</code></pre>
+
+<div class="fragment">
+<pre><code >map[S](f: (T) ⇒ S): Future[S]</code></pre>
+<p>Apply function to the value of a Future, returning  a new Future</p>
+</div>
+<div class="fragment">
+<pre><code>reduce[A1](op: (A1, A1) ⇒ A1): A1</code></pre>
+<p>General form of <i>Sum</i></p>
+</div>
+</section>
+
+<section>
+  <h2>Test Sum Balances</h2>
+  <pre><code>"bbm" in {
+    BalanceByMap(Id(123)).get must beEqualTo(Bal(125.5F))
+}</code></pre>
+</section>
+
+<section>
+  <h2>Special case telephone number</h2>
+  <pre><code>object SpecialCaseBalance {
+  def apply(pn: Num)
+    (implicit acctLook: Lookup[Num, Acct], 
+     balLook: Lookup[Acct, Bal],
+     ec: ExecutionContext): Future[Bal] =
+    pn match {
+      case Num("911") => Future.successful(Bal(0F))
+      case Num("555-555-5555") => Future.successful(Bal(1000000F))
+      case _ => acctLook(pn) flatMap { balLook }
+    }
+}
+}</code></pre>
+</section>
+
+<section>
+  <h2>10% Discount if special</h2>
+  <pre><code>object Discount {
+  def apply(acct: Acct)(implicit balLook: Lookup[Acct, Bal], 
+                        specialLook: Lookup[Acct, Boolean], 
+                        ec: ExecutionContext): Future[Bal] = {
+    val balance = balLook(acct)
+    val special = specialLook(acct)
+    for {
+       bal <- balance
+       spec <- special
+    } yield if (spec) bal * 0.9F else bal
+  }
+}</code></pre>
+<div class="fragment">
+<p>for comprehension, sugar over flatMap and map</p>
+</div>
+</section>
+
+
+<section>
+  <h2>Discount given phone number</h2>
+  <pre><code>object DiscountByPhone {
+  def apply(pn: Num)(implicit acctLook: Lookup[Num, Acct], 
+                        balLook: Lookup[Acct, Bal], 
+                        specialLook: Lookup[Acct, Boolean],
+                        ec: ExecutionContext): Future[Bal] =
+    acctLook(pn) flatMap { Discount(_) }
+}</code></pre>
+</section>
+
+<section>
+  <h2>Discount total customer balance</h2>
+  <pre><code>object DiscountById {
+  def apply(id: Id)(implicit numLook: Lookup[Id, List[Num]],
+       acctLook: Lookup[Num, Acct], 
+       balLook: Lookup[Acct, Bal], 
+       specialLook: Lookup[Acct, Boolean],
+       ec: ExecutionContext): Future[Bal] =
+    numLook(id) flatMap { 
+       Future.traverse(_)(DiscountByPhone(_)) } map {
+           _.reduce(_ + _) }
+}</code></pre>
+</section>
+
+
+<section>
+  <h2>Actor</h2>
+  <p></p>
+  <ul>
+    <li>State</li>
+    <li>Mailbox</li>
+    <li>Behavior</li>
+  </ul>
+  <p>Locks state within a box</p>
+  <p>Enforces single operation at time</p>
+  <p>Interact only via <i>messages</i></p>
+  <p>Real Object</p>
+</section>
+
+
+<section>
+  <h2>Actor returning value from Map</h2>
+<pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+  
+  class SActor extends Actor {
+    def receive = {
+      case a => sender ! values.get(a.asInstanceOf[K])
+    }
+  }
+  
+ val act = system.actorOf(Props(new SActor))
+ 
+  def apply(arg: K): Future[V] = (act ? arg).mapTo[Option[V]].
+     collect {
+      case None => throw new NoSuchElementException(arg.toString)
+      case Some(v) => v }
+}</code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+ </code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V],
+  </code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+</code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+ </code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+  
+  class SActor extends Actor {
+    def receive = {
+      case a => sender ! values.get(a.asInstanceOf[K])
+    }
+  }
+ </code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+  
+  class SActor extends Actor {
+    def receive = {
+      case a => sender ! values.get(a.asInstanceOf[K])
+    }
+  }
+  
+ val act = system.actorOf(Props(new SActor))
+ 
+  </code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+  
+  class SActor extends Actor {
+    def receive = {
+      case a => sender ! values.get(a.asInstanceOf[K])
+    }
+  }
+  
+ val act = system.actorOf(Props(new SActor))
+ 
+  implicit val timeout = Timeout(100, TimeUnit.MILLISECONDS)
+ </code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+  
+  class SActor extends Actor {
+    def receive = {
+      case a => sender ! values.get(a.asInstanceOf[K])
+    }
+  }
+  
+ val act = system.actorOf(Props(new SActor))
+ 
+  implicit val timeout = Timeout(100, TimeUnit.MILLISECONDS)
+  def apply(arg: K): Future[V] = (act ? arg)
+</code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+  
+  class SActor extends Actor {
+    def receive = {
+      case a => sender ! values.get(a.asInstanceOf[K])
+    }
+  }
+  
+ val act = system.actorOf(Props(new SActor))
+ 
+  implicit val timeout = Timeout(100, TimeUnit.MILLISECONDS)
+  def apply(arg: K): Future[V] = (act ? arg).mapTo[Option[V]]</code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+  
+  class SActor extends Actor {
+    def receive = {
+      case a => sender ! values.get(a.asInstanceOf[K])
+    }
+  }
+ 
+ val act = system.actorOf(Props(new SActor))
+  implicit val timeout = Timeout(100, TimeUnit.MILLISECONDS)
+  def apply(arg: K): Future[V] = (act ? arg).mapTo[Option[V]].
+     collect {
+      case None => throw new NoSuchElementException(arg.toString)
+</code></pre>
+</section>
+
+<section>
+  <pre><code>case class ActorService[K, V](values: Map[K, V])
+  (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+  
+  class SActor extends Actor {
+    def receive = {
+      case a => sender ! values.get(a.asInstanceOf[K])
+    }
+  }
+ 
+ val act = system.actorOf(Props(new SActor))
+  implicit val timeout = Timeout(100, TimeUnit.MILLISECONDS)
+  def apply(arg: K): Future[V] = (act ? arg).mapTo[Option[V]].
+     collect {
+      case None => throw new NoSuchElementException(arg.toString)
+      case Some(v) => v }
+}</code></pre>
+</section>
+
+<section>
+  <h2></h2>
+  <pre><code>implicit val system = ActorSystem("MySystem")
+implicit val ec = system.dispatcher
+
+implicit val acctLook = ActorService(ValueMaps.acctMap)
+implicit val balLook = ActorService(ValueMaps.balMap)
+implicit val numLook = ActorService(ValueMaps.numMap)
+
+"bbm" in {
+  BalanceByMap.apply(Id(123)).get must beEqualTo(Bal(125.5F))
+}</code></pre>
+</section>
+
+<section>
+  <h2>Apache Camel</h2>
+  <p>Implements Enterprise Integration Patterns</p>
+  <p>Provides wide range of end points</p>
+  <ul>
+    <li>HTTP</li>
+    <li>AMQP</li>
+    <li>AWS</li>
+    <li>SOAP services</li>
+    <li>JMS</li>
+    <li>FTP</li>
+    <li>JDBC</li>
+    <li>bean</li>
+    <li>...</li>
+  </ul>
+  <p>Producer endpoint generates messages</p>
+  <p>Consumer endpoint consumes messages</p>
+  <p>Route defines how messages move between end points</p>
+</section>
+
+<section>
+  <h2>Simulate external service</h2>
+  <p>Create seda end point that references a ValueMap</p>
+  <pre><code>add("bal", ValueMaps.balMap)</code></pre>
+  <pre><code>case class Responder[K, V](map: Map[K, V]) {
+   def apply(a: Any) = map(a.asInstanceOf[K])
+}  
+  
+def add[K, V](name: String, map: Map[K, V]) {
+  context.addRoutes(new RouteBuilder() {
+     def configure {
+        from("seda:" + name).bean(Responder(map))
+      }
+   })
+}</code></pre>
+<p>Java route builder DSL wiring JavaBean</p>
+</section>
+
+<section>
+  <h2>Akka Camel</h2>
+  <p>Maps Camel endpoint to Akka Actor</p>
+  </section>
+
+<section>
+  <h2>Producer sending orders via JMS queue</h2>
+  <pre><code>
+class Orders extends Actor with Producer with Oneway {
+    def endpointUri = "jms:queue:Orders"
+}
+</code></pre>
+<pre><code>
+orders ! &lt;order amount="100" currency="PLN" itemId="12345"/&gt;
+</code></pre>
+
+</section>
+
+<section>
+<h2>HTTP server printing requests</h2>
+<pre><code>class MyEndpoint extends Consumer {
+  def endpointUri = "jetty:http://localhost:8877/example"
+
+  def receive = {
+    case CamelMessage(payload,_) ⇒  println(payload)
+  }
+}</code></pre>
+</section>
+
+<section>
+  <h2>Balance Lookup as Camel request/response Producer</h2>
+<pre><code>
+implicit val balLook: Lookup[Acct, Bal] = CamelService("bal")
+</code></pre>
+<pre><code>
+case class CamelService[K, V](aname: String)
+    (implicit m: Manifest[V], system: ActorSystem) 
+  extends Lookup[K, V] {
+     class SActor(name: String) extends Actor 
+       with Producer {
+       def endpointUri = "seda:" + name
+     }
+  
+  val act = system.actorOf(Props(new SActor(aname)),name = aname)
+
+  def apply(arg: K): Future[V] = (act ? arg).collect {
+    case CamelMessage(a: V, _) => a
+  }
+}</code></pre>
+</section>
+
+<section>
+  <h2>Flow as Camel Camel request/response Consumer</h2>
+ <pre><code>case class RRFlow[A, R](aname: String, flow: A => Future[R])
+  (implicit m: Manifest[A], system: ActorSystem) {
+  val act = system.actorOf(Props(new FActor(aname, flow)), 
+       name = aname)}
+
+class FActor[A, R](name: String, flow: A => Future[R])
+  (implicit m: Manifest[A]) extends Consumer {
+  def endpointUri = "seda:" + name
+ 
+  def receive = {
+    case CamelMessage(a: A, _) =>  
+       (Future(a).flatMap(flow)) pipeTo sender
+    case CamelMessage(_@ a, _) => 
+       sender ! Failure(new IllegalArgumentException(a.toString))}}</code></pre>
+<p>Uses actor ExecutionContext</p>
+</section>
+
+<section>
+  <h2>BalanceByMap as Camel request/response Consumer</h2>
+  <pre><code>val bbm = RRFlow("bbm", BalanceByMap.apply)</code></pre>
+</section>
+
+<section>
+  <h2>Simulate client referencing composite service</h2>
+  <pre><code>"check bbm request using camel" in {
+    (template.requestBody("seda:bbm", Id(123))) 
+          must beEqualTo(Bal(125.5F))
+}</code></pre>
+</section>
+
+
+
+<section>
+  <h2>Camel specs2</h2>
+  <p><b>sequential</b></p>
+  <p>All other tests are run in parallel</p>
+</section>
+
+<section>
+<h2>Caveats</h2>
+<ul>
+<li>Thread safety</li>
+<li>Debugging</li>
+<li></li>
+</ul>
+</section>
+
+<section>
+  <h2>Immutable</h2>
+  <p>Mandatory given the threading behind the Futures</p>
+  <ul>
+  <li>Best to use case classes and convert at edges</li>
+  <li>No JavaBeans</li>
+  <li>Avoid Java XML APIs</li>
+  <ul>
+</section>
+
+<section>
+<h2>Encapsulate mutable data</h2>
+<pre><code>private case class Lock
+
+class Monitor[T] private (private val v: T, 
+                          private val lock: Lock) {
+  def apply[R: Immutable](f: T => R) = lock.synchronized {f(v)}
+  def map[R](f: T => R) = new Monitor(synchronized {f(v) }, lock)
+}
+
+object Monitor {
+  implicit def create[S, T](s: S)(implicit p: S => T) = 
+       new Monitor(p(s), Lock())}</code></pre>
+<div class="fragment">
+<p>create <i>parses</i> an S into a T</p>
+<p>wraps it inside a synchronizing wrapper</p>
+<p>ensures T is not externally visible</p>
+</div>       
+</section>
+
+<section>
+<h2>Enforce immutable results</h2>
+<pre><code>trait Immutable[T]
+
+implicit object IntImmutable extends Immutable[Int]
+implicit object FloatImmutable extends Immutable[Float]
+implicit object StringImmutable extends Immutable[String]</code></pre>
+<div class="fragment">
+<p>Immutable is a TypeClass</p>
+<p>apply[R] only compiles if instance of Immutable[R] exists</p>
+</div>
+</section>
+
+<section>
+<h2>Trivial test</h2>
+<pre><code>"string" in {
+    val m: Monitor[String] = "123"
+    m { _ * 2 } must beEqualTo("123123")
+}</code></pre>
+</section>
+
+<section>
+<h2>XML parsing</h2>
+<pre><code>"dom" in {
+    def content(d: Document) = d.getDocumentElement.getTextContent
+    implicit def toDom(s: String) = 
+      (DocumentBuilderFactory.newInstance().
+         newDocumentBuilder()).parse(
+            new InputSource(new StringReader(s)))
+    val mdoc: Monitor[Document] = "&lt;xml>&lt;key>value&lt;/key>&lt;/xml>"
+    mdoc { content } must beEqualTo("value")
+}</code></pre><div class="fragment">
+<p>toDom implements create[String,Dom]</p>
+</div>
+</section>
+
+<section>
+<h2>Debugging</h2>
+<p>Hard to debug</p>
+<ul>
+<li>Callback driven, asynchronous code</li>
+<li>Values are Function objects</li>
+<li>Large stacktraces, filled within generated classes</li>
+</ul>
+<p><b>Use Test Driven Development</b></p>
+</section>
+
+<section>
+<h2>The Next Spring?</h2>
+<p>Spring (and Ruby on Rails) gained impetus from the accidental complexity of J2EE.</p>
+<p>Replaced $40K per cpu Websphere and Weblogic deployments<p>
+</section>
+
+<section>
+<h2>Async Javascript</h2>
+<p>Futures and promises are widely supported</p>
+<ul>
+<li>node.js</li>
+<li>jquery</li>
+<li>...</li>
+</ul>
+</section>
+				
+
+<section>
+   <p>https://github.com/searler/FutureWorkflow</p>
+   <p>http://cognitiveentity.wordpress.com/</p>
+   <p>rsearle3@verizon.net</p>
+</section>
+
+				
+<section>
+  <h1>THE END</h1>
+</section>
+
+</div>
+
+</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: false,
+				progress: true,
+				history: true,
+                                rollingLinks: false,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
